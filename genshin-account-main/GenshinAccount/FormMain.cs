@@ -491,8 +491,7 @@ namespace GenshinAccount
         }
 
         // 检查注册表下的内容是否存在
-        private string path = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-        private int RestStartState;
+        /*private int RestStartState;
         private void RegisterChangerCheck()
         {
             const string DefaultValue = "null";
@@ -512,26 +511,19 @@ namespace GenshinAccount
             {
                 RestStartState = 1;
             }
-        }
+        }*/
         private void Reststart_CheckedChanged(object sender, EventArgs e)
         {
-            const string DefaultValue = "null";
-            // 异常问题的处理
+            string path = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            /*// 异常问题的处理
             if (RestStartState == 1)
-            {
-                this.Reststart.Checked = true;
-            }
-            else if (DefaultValue == Convert.ToString(Registry.GetValue
-                (@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
-                "GenshinAccount",
-                DefaultValue)))
             {
                 this.Reststart.Checked = true;
             }
             else
             {
                 this.Reststart.Checked = false;
-            }
+            }*/
             if (Reststart.Checked == true)
             {
                 // 添加到 当前登陆用户的 注册表启动项

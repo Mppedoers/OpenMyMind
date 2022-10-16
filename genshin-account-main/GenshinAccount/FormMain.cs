@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
@@ -345,7 +346,7 @@ namespace GenshinAccount
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            
+
         }
 
         private void lvwAcct_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -487,53 +488,28 @@ namespace GenshinAccount
 
         private void RestStart(object sender, EventArgs e)
         {
-           
+
         }
 
-        // 检查注册表下的内容是否存在
-        /*private int RestStartState;
-        private void RegisterChangerCheck()
-        {
-            const string DefaultValue = "null";
-            string keyname = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-            string valuename = "GenshinAccount";
-            object o;
-            o = Registry.GetValue(keyname, valuename, DefaultValue);
-            if (o == null)
-            {
-                RestStartState = 0;
-            }
-            else if (DefaultValue == Convert.ToString(o))
-            {
-                RestStartState = 0;
-            }
-            else
-            {
-                RestStartState = 1;
-            }
-        }*/
         private void Reststart_CheckedChanged(object sender, EventArgs e)
         {
             string path = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-            /*// 异常问题的处理
-            if (RestStartState == 1)
-            {
-                this.Reststart.Checked = true;
-            }
-            else
-            {
-                this.Reststart.Checked = false;
-            }*/
             if (Reststart.Checked == true)
             {
                 // 添加到 当前登陆用户的 注册表启动项
+
                 RegistryKey rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+                rgk.SetValue("GenshinAccount", @"""" + path + @"""");
+                rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", @"""" + path + @"""");
 
                 // 添加到 所有用户的 注册表启动项
                 rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-                MessageBox.Show("!!添加成功!!\n若重启后选项没有勾选 不用管", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\WOW6432Node\CurrentVersion\Run");
+                rgk.SetValue("GenshinAccount", @"""" + path + @"""");
+                MessageBox.Show("!!添加成功!!\n若重启后选项没有勾选 不用管", "提示",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -541,8 +517,12 @@ namespace GenshinAccount
                 // 改用内容覆盖
                 RegistryKey rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", "null");
+                rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
+                rgk.SetValue("GenshinAccount", "null");
 
                 rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+                rgk.SetValue("GenshinAccount", "null");
+                rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", "null");
                 MessageBox.Show("!!移除成功!!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

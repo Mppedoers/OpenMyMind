@@ -500,14 +500,17 @@ namespace GenshinAccount
 
                 RegistryKey rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-                rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", @"""" + path + @"""");
 
                 // 添加到 所有用户的 注册表启动项
                 rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-                rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\WOW6432Node\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", @"""" + path + @"""");
+
+                // 针对64位的自启动添加
+                //rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
+                //rgk.SetValue("GenshinAccount", @"""" + path + @"""");
+
+                //rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\WOW6432Node\CurrentVersion\Run");
+                //rgk.SetValue("GenshinAccount", @"""" + path + @"""");
                 MessageBox.Show("!!添加成功!!\n若重启后选项没有勾选 不用管", "提示",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -517,13 +520,16 @@ namespace GenshinAccount
                 // 改用内容覆盖
                 RegistryKey rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", "null");
-                rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", "null");
 
                 rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rgk.SetValue("GenshinAccount", "null");
-                rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", "null");
+
+                // 针对64位的自启动删除
+                //rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
+                //rgk.SetValue("GenshinAccount", "null");
+
+                //rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
+                //rgk.SetValue("GenshinAccount", "null");
                 MessageBox.Show("!!移除成功!!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }

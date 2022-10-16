@@ -36,7 +36,7 @@ namespace GenshinAccount
             if (currentVersion.Length > 3)
             {
                 thisVersion = currentVersion.Substring(0, 3);
-                currentVersion = " V 1.0.5 Powered by x3zF ";
+                currentVersion = " V 1.0.5 ";
             }
             this.Text += currentVersion;
             GAHelper.Instance.RequestPageView($"/acct/main/{thisVersion}", $"进入{thisVersion}版本原神账户切换工具主界面");

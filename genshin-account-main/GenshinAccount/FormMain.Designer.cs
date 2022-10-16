@@ -262,7 +262,6 @@
             // Reststart
             // 
             resources.ApplyResources(this.Reststart, "Reststart");
-            this.Reststart.Checked = false;
             this.Reststart.Name = "Reststart";
             this.Reststart.UseVisualStyleBackColor = true;
             this.Reststart.CheckedChanged += new System.EventHandler(this.Reststart_CheckedChanged);

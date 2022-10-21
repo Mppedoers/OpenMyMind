@@ -533,44 +533,6 @@ namespace GenshinAccount
             RefreshList();
         }
 
-        public static void FolderMoveToNewFolder(string sourcedirectory, string destinationdirectory)
-        {
-            try
-            {
-                if (!Directory.Exists(destinationdirectory))
-                    Directory.CreateDirectory(destinationdirectory);
-
-                string[] fileList = Directory.GetFileSystemEntries(sourcedirectory);
-                foreach (string file in fileList)
-                {
-                    if (Directory.Exists(file))
-                    {
-                        if (Directory.Exists(destinationdirectory))
-                        {
-                            //Directory.Move(file, destinationdirectory);
-                            DirectoryInfo folder = new DirectoryInfo(file);
-                            string strCreateFileName = destinationdirectory + "\\" + folder.Name;
-                            if (!Directory.Exists(strCreateFileName))
-                                folder.MoveTo(strCreateFileName);
-                            else
-                                folder.Delete();
-                        }
-                        else
-                            Directory.Move(sourcedirectory, destinationdirectory);
-
-                    }
-
-                    if (System.IO.File.Exists(file))
-                    {
-                        System.IO.File.Move(file, destinationdirectory);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-
         private void RestStart_Click(object sender, EventArgs e)
         {
             string exePath = Environment.CurrentDirectory + "\\GenshinAccount.exe";

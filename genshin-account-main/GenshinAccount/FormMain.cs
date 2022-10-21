@@ -535,16 +535,18 @@ namespace GenshinAccount
 
         private void RestStart_Click(object sender, EventArgs e)
         {
+            string StartUpPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             string exePath = Environment.CurrentDirectory + "\\GenshinAccount.exe";
             WshShell sl = new WshShell();
-            string dtpath1 = Environment.GetFolderPath(Environment.SpecialFolder.Startup)
-                + "GenshinAccount.lnk";
-            string dd = Path.GetDirectoryName(dtpath1);
-            if (!Directory.Exists(dd))
+            string StartPath = StartUpPath + "GenshinAccount.lnk";
+            if (Directory.Exists(
+                StartUpPath + "\\GenshinAccount"))
             {
-                Directory.CreateDirectory(dd);
+                Directory.Delete(
+                    StartUpPath + "\\GenshinAccount");
             }
-            IWshShortcut sc = (IWshShortcut)sl.CreateShortcut(dtpath1);
+            // MessageBox.Show(StartUpPath + "\\GenshinAccount"); For Debug
+            IWshShortcut sc = (IWshShortcut)sl.CreateShortcut(StartPath);
             sc.TargetPath = exePath;
             sc.Description = "创建应用程序的快捷方式";
             sc.Save();//保存快捷方式

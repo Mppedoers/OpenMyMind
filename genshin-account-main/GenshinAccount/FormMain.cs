@@ -16,6 +16,10 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using IWshRuntimeLibrary;
+using System.Drawing.Text;
+using System.Runtime.InteropServices.ComTypes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace GenshinAccount
 {
@@ -37,7 +41,7 @@ namespace GenshinAccount
             if (currentVersion.Length > 3)
             {
                 thisVersion = currentVersion.Substring(0, 3);
-                currentVersion = " V 1.0.5 ";
+                currentVersion = " V 1.1.0 ";
             }
             this.Text += currentVersion;
             GAHelper.Instance.RequestPageView($"/acct/main/{thisVersion}", $"进入{thisVersion}版本原神账户切换工具主界面");
@@ -408,11 +412,11 @@ namespace GenshinAccount
             dialog.Description = "请选择原神安装路径";
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                if (!string.IsNullOrEmpty(dialog.SelectedPath) && File.Exists(Path.Combine(dialog.SelectedPath, "YuanShen.exe")))
+                if (!string.IsNullOrEmpty(dialog.SelectedPath) && System.IO.File.Exists(Path.Combine(dialog.SelectedPath, "YuanShen.exe")))
                 {
                     dialog.SelectedPath = dialog.SelectedPath.Replace("Genshin Impact Game", "");
                 }
-                if (string.IsNullOrEmpty(dialog.SelectedPath) || !File.Exists(Path.Combine(dialog.SelectedPath, "Genshin Impact Game", "YuanShen.exe")))
+                if (string.IsNullOrEmpty(dialog.SelectedPath) || !System.IO.File.Exists(Path.Combine(dialog.SelectedPath, "Genshin Impact Game", "YuanShen.exe")))
                 {
                     MessageBox.Show("无法在该文件夹中找到原神启动程序，请选择正确的原神安装路径!");
                 }
@@ -486,54 +490,6 @@ namespace GenshinAccount
             StartGame();
         }
 
-        private void RestStart(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Reststart_CheckedChanged(object sender, EventArgs e)
-        {
-            string path = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-            if (Reststart.Checked == true)
-            {
-                // 添加到 当前登陆用户的 注册表启动项
-
-                RegistryKey rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-
-                // 添加到 所有用户的 注册表启动项
-                rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-
-                // 针对64位的自启动添加
-                //rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
-                //rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-
-                //rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\WOW6432Node\CurrentVersion\Run");
-                //rgk.SetValue("GenshinAccount", @"""" + path + @"""");
-                MessageBox.Show("!!添加成功!!\n若重启后选项没有勾选 不用管", "提示",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                // 无法获得删除注册表的权限
-                // 改用内容覆盖
-                RegistryKey rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", "null");
-
-                rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-                rgk.SetValue("GenshinAccount", "null");
-
-                // 针对64位的自启动删除
-                //rgk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
-                //rgk.SetValue("GenshinAccount", "null");
-
-                //rgk = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\WOW6432Node\Windows\CurrentVersion\Run");
-                //rgk.SetValue("GenshinAccount", "null");
-                MessageBox.Show("!!移除成功!!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-        
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -568,6 +524,69 @@ namespace GenshinAccount
         private void label4_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/babalae/genshin-account");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Plugin form = new Plugin();
+            form.ShowDialog();
+            RefreshList();
+        }
+
+        public static void FolderMoveToNewFolder(string sourcedirectory, string destinationdirectory)
+        {
+            try
+            {
+                if (!Directory.Exists(destinationdirectory))
+                    Directory.CreateDirectory(destinationdirectory);
+
+                string[] fileList = Directory.GetFileSystemEntries(sourcedirectory);
+                foreach (string file in fileList)
+                {
+                    if (Directory.Exists(file))
+                    {
+                        if (Directory.Exists(destinationdirectory))
+                        {
+                            //Directory.Move(file, destinationdirectory);
+                            DirectoryInfo folder = new DirectoryInfo(file);
+                            string strCreateFileName = destinationdirectory + "\\" + folder.Name;
+                            if (!Directory.Exists(strCreateFileName))
+                                folder.MoveTo(strCreateFileName);
+                            else
+                                folder.Delete();
+                        }
+                        else
+                            Directory.Move(sourcedirectory, destinationdirectory);
+
+                    }
+
+                    if (System.IO.File.Exists(file))
+                    {
+                        System.IO.File.Move(file, destinationdirectory);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        private void RestStart_Click(object sender, EventArgs e)
+        {
+            string exePath = Environment.CurrentDirectory + "\\GenshinAccount.exe";
+            WshShell sl = new WshShell();
+            string dtpath1 = Environment.GetFolderPath(Environment.SpecialFolder.Startup)
+                + "\\GenshinAccount\\GenshinAccount.lnk";
+            string dd = Path.GetDirectoryName(dtpath1);
+            if (!Directory.Exists(dd))
+            {
+                Directory.CreateDirectory(dd);
+            }
+            IWshShortcut sc = (IWshShortcut)sl.CreateShortcut(dtpath1);
+            sc.TargetPath = exePath;
+            sc.Description = "创建应用程序的快捷方式";
+            sc.Save();//保存快捷方式
+            MessageBox.Show("自启动创建成功!", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

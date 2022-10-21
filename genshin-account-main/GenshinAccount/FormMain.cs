@@ -538,7 +538,7 @@ namespace GenshinAccount
             string exePath = Environment.CurrentDirectory + "\\GenshinAccount.exe";
             WshShell sl = new WshShell();
             string dtpath1 = Environment.GetFolderPath(Environment.SpecialFolder.Startup)
-                + "\\GenshinAccount\\GenshinAccount.lnk";
+                + "GenshinAccount.lnk";
             string dd = Path.GetDirectoryName(dtpath1);
             if (!Directory.Exists(dd))
             {
